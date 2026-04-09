@@ -24,11 +24,11 @@ __global__ void Hardswish(float* A) {
     // https://rocm.docs.amd.com/projects/HIP/en/latest/how-to/hip_cpp_language_extensions.html#built-in-constants
     const unsigned tid  = threadIdx.x;
     const unsigned bid  = blockIdx.x;
-    const unsigned base = bid * threadsPerBlock * N + tid * N;
+    const unsigned base = bid * threadsPerBlock * N;
 
     #pragma nounroll
     for (int i = 0; i < (int)N; ++i) {
-        const unsigned idx = base + i;
+        const unsigned idx = base + i * threadsPerBlock + tid;
         float x = A[idx];
         float t = fminf(fmaxf(x + 3.0f, 0.0f), 6.0f) * (1.0f/6.0f);
         A[idx] = x * t;
